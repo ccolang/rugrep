@@ -27,7 +27,7 @@ rugrep "pattern" file.txt
 
 ## Options
 
-Currently no options are implemented. Plain text search only.
+Currently no options, except -n, are implemented. Plain text and directory file search only.
 
 ## License
 
