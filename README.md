@@ -1,10 +1,6 @@
 # rugrep
 A grep-like program for windows written in rust 
 
-# WinGrep
-
-A minimal grep-like text search utility for Windows.
-
 ## Features
 
 | Feature | Status |
