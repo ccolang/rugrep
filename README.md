@@ -21,7 +21,7 @@ A grep-like program for windows written in rust
 
 ```bash
 # Basic search
-wingrep "pattern" file.txt
+rugrep "pattern" file.txt
 ```
 
 ## Options
