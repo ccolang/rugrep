@@ -1,2 +1,2 @@
 # rugrub
-A grub-like program written in rust
+A grub-like program for windows written in rust 
