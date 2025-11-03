@@ -1,2 +1,37 @@
 # rugrep
 A grep-like program for windows written in rust 
+
+# WinGrep
+
+A minimal grep-like text search utility for Windows.
+
+## Features
+
+| Feature | Status |
+|---------|--------|
+| Basic text search | ✓ |
+| Single file search | ✓ |
+| Regular expressions | ✗ |
+| Recursive directory search | ✗ |
+| Case-insensitive search | ✗ |
+| Line numbers | ✗ |
+| Colored output | ✗ |
+| Multiple file search | ✗ |
+| Inverted match | ✗ |
+| Count matches | ✗ |
+| Context lines (before/after) | ✗ |
+| Binary file detection | ✗ |
+## Usage
+
+```bash
+# Basic search
+wingrep "pattern" file.txt
+```
+
+## Options
+
+Currently no options are implemented. Plain text search only.
+
+## License
+
+MIT
