@@ -7,10 +7,11 @@ A grep-like program for windows written in rust
 |---------|--------|
 | Basic text search | ✓ |
 | Single file search | ✓ |
+| Directory file search | ✓ |
+| Line numbers | ✓ |
 | Regular expressions | ✗ |
 | Recursive directory search | ✗ |
 | Case-insensitive search | ✗ |
-| Line numbers | ✗ |
 | Colored output | ✗ |
 | Multiple file search | ✗ |
 | Inverted match | ✗ |
