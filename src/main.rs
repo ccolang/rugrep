@@ -4,15 +4,19 @@ use std::path::Path;
 
 use colored::Colorize;
 
+mod argmanager;
+use argmanager::ArgManager;
+use argmanager::Value;
+
 pub struct RuGrep {
     pattern: String,
     file_path: String,
-    line_number: bool
+    arg_manager: ArgManager
 }
 
 impl RuGrep {
-    pub fn new(pattern: String, file_path: String, line_number: bool) -> Self {
-        RuGrep { pattern, file_path, line_number }
+    pub fn new(pattern: String, file_path: String, arg_manager: ArgManager) -> Self {
+        RuGrep { pattern, file_path, arg_manager }
     }
 
     fn read_file(&self, pattern: String, file_path: String) {
@@ -20,8 +24,10 @@ impl RuGrep {
 
         for (i, line) in content.lines().enumerate() {
             if line.to_lowercase().contains(&pattern.to_lowercase()) {
-                if self.line_number {
-                    print!("{}:{}:", self.file_path, i);
+                if let Some(v) = self.arg_manager.get_option("n") {
+                    if let Value::None(true) = v {
+                        print!("{}:{}:", file_path, i);
+                    }
                 }
                 let index = line.find(&pattern);
 
@@ -62,7 +68,7 @@ impl RuGrep {
                     continue;
                 }
 
-                Self::read_file(self, self.pattern.to_string(), file.path().to_string_lossy().to_string());
+                Self::read_file(self, self.pattern.to_string(), file_path.to_string_lossy().to_string());
             }
         }
     }
@@ -70,10 +76,10 @@ impl RuGrep {
 
 fn main() {
     let mut args: Vec<String> = env::args().collect();
-
-    /*for (i, argument) in args.iter().enumerate() {
-        println!("{} {}", i, argument);
-    }*/
+    let mut am = ArgManager::new(env::args().collect());
+    am.add_option("n", Value::None(false));
+    am.add_option("v", Value::None(false));
+    am.scan();
 
     if args.len() < 3 {
         println!("{}", "Not enough arguments!".red());
@@ -81,21 +87,8 @@ fn main() {
         return;
     }
 
-    let mut line: bool = false;
-    let mut has_options: bool = false;
-    if args[1].starts_with("-") {
-        has_options = true;
-        let options = args[1].split_off(1);
-
-        for c in options.chars() {
-            if c.eq_ignore_ascii_case(&'n') {
-                line = true;
-            }
-        }
-    }
-
     let mut start = 1;
-    if has_options {
+    if am.has_options() {
         start = 2;
     }
 
@@ -106,12 +99,11 @@ fn main() {
             pattern.push_str(&args[i]);
         }
     }
-    println!("{}", pattern);
 
     let rugrep = RuGrep::new(
         pattern,
         args.get(args.len() - 1).as_deref().unwrap().to_string(),
-        line
+        am
     );
     rugrep.show();
 }
