@@ -24,8 +24,10 @@ impl RuGrep {
 
         for (i, line) in content.lines().enumerate() {
             if line.to_lowercase().contains(&pattern.to_lowercase()) {
-                if let Some(_) = self.arg_manager.get_option("n") {
-                    print!("{}:{}:", file_path, i);
+                if let Some(v) = self.arg_manager.get_option("n") {
+                    if let Value::None(true) = v {
+                        print!("{}:{}:", file_path, i);
+                    }
                 }
                 let index = line.find(&pattern);
 
