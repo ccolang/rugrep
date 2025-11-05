@@ -12,20 +12,18 @@ pub struct ArgManager {
     pub arguments: Vec<String>,
     options: HashMap<String, Value>,
     pub options_size: usize,
-    has_options: bool,
     pub length: usize
 }
 
 impl ArgManager {
     pub fn new(arguments: Vec<String>) -> Self {
         let length = arguments.len();
-        ArgManager { arguments, options: HashMap::new(), options_size: 0, has_options: false, length }
+        ArgManager { arguments, options: HashMap::new(), options_size: 0, length }
     }
 
     pub fn scan(&mut self) {
         for (i, argument) in self.arguments.iter().enumerate() {
             if argument.starts_with("-") {
-                self.has_options = true;
                 if let Some(value) = self.options.get(&argument[1..]) {
                     self.options_size += 1;
                     match value {
@@ -60,7 +58,7 @@ impl ArgManager {
     }
 
     pub fn has_options(&self) -> bool {
-        self.has_options
+        self.options_size > 0
     }
 
 }
