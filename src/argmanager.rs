@@ -5,19 +5,20 @@ pub enum Value {
     Int(i32),
     Float(f64),
     Text(String),
-    Bool(bool),
-    None(bool)
+    Bool(bool)
 }
 
 pub struct ArgManager {
     arguments: Vec<String>,
     options: HashMap<String, Value>,
-    has_options: bool
+    has_options: bool,
+    pub length: usize
 }
 
 impl ArgManager {
     pub fn new(arguments: Vec<String>) -> Self {
-        ArgManager { arguments, options: HashMap::new(), has_options: false }
+        let length = arguments.len();
+        ArgManager { arguments, options: HashMap::new(), has_options: false, length }
     }
 
     pub fn scan(&mut self) {
@@ -25,10 +26,13 @@ impl ArgManager {
             if argument.starts_with("-") {
                 self.has_options = true;
                 if let Some(value) = self.options.get(&argument[1..]) {
-                    if let Value::None(_) = value {
-                        self.options.insert(argument[1..].to_string(), Value::None(true));
-                    } else {
-                        self.options.insert(argument[1..].to_string(), value.clone());
+                    match value {
+                        Value::Bool(b) => {
+                            self.options.insert(argument[1..].to_string(), Value::Bool(!b));
+                        }
+                        _ => {
+                            self.options.insert(argument[1..].to_string(), value.clone());
+                        }
                     }
                 }
             } 
@@ -47,6 +51,10 @@ impl ArgManager {
 
     pub fn get_option(&self, key: &str) -> Option<&Value> {
         self.options.get(key)
+    }
+
+    pub fn is_true(&self, val: &Value) -> bool {
+        matches!(val, Value::Bool(true))
     }
 
     pub fn has_options(&self) -> bool {
