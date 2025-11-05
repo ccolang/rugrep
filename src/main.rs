@@ -24,22 +24,25 @@ impl RuGrep {
 
         for (i, line) in content.lines().enumerate() {
             if line.to_lowercase().contains(&pattern.to_lowercase()) {
-                if let Some(v) = self.arg_manager.get_option("n") {
-                    if let Value::None(true) = v {
-                        print!("{}:{}:", file_path, i);
-                    }
+                if self.arg_manager.is_true(self.arg_manager.get_option("n").unwrap()) {
+                    print!("{}:{}:", file_path, i);
                 }
+
                 let index = line.find(&pattern);
 
                 for (i, c) in line.chars().into_iter().enumerate() {
-                    print!(
-                        "{}",
-                        if i >= index.unwrap() && i < index.unwrap() + pattern.len() {
-                            c.to_string().red()
-                        } else {
-                            c.to_string().white()
-                        }
-                    );
+                    if self.arg_manager.is_true(self.arg_manager.get_option("nf").unwrap()) {
+                        print!("{}", c.to_string());    
+                    } else {
+                        print!(
+                            "{}",
+                            if i >= index.unwrap() && i < index.unwrap() + pattern.len() {
+                                c.to_string().red()
+                            } else {
+                                c.to_string().white()
+                            }
+                        );
+                    }
                 }
 
                 println!();
@@ -75,13 +78,13 @@ impl RuGrep {
 }
 
 fn main() {
-    let mut args: Vec<String> = env::args().collect();
     let mut am = ArgManager::new(env::args().collect());
-    am.add_option("n", Value::None(false));
-    am.add_option("v", Value::None(false));
+    am.add_option("n", Value::Bool(false));
+    am.add_option("v", Value::Bool(false));
+    am.add_option("nf", Value::Bool(false));
     am.scan();
 
-    if args.len() < 3 {
+    if am.length < 3 {
         println!("{}", "Not enough arguments!".red());
         println!("rugrep.exe [options] pattern [files]");
         return;
@@ -89,20 +92,20 @@ fn main() {
 
     let mut start = 1;
     if am.has_options() {
-        start = 2;
+        start = am.options_size + 1;
     }
 
-    let mut pattern = args[start].to_string();
-    if args.len() >= 3 {
-        for i in start+1..args.len() - 1  {
+    let mut pattern = am.arguments[start].to_string();
+    if am.length >= 3 {
+        for i in start+1..am.length - 1  {
             pattern.push(' ');
-            pattern.push_str(&args[i]);
+            pattern.push_str(&am.arguments[i]);
         }
     }
 
     let rugrep = RuGrep::new(
         pattern,
-        args.get(args.len() - 1).as_deref().unwrap().to_string(),
+        am.arguments.get(am.length - 1).as_deref().unwrap().to_string(),
         am
     );
     rugrep.show();
