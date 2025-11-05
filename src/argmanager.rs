@@ -9,8 +9,9 @@ pub enum Value {
 }
 
 pub struct ArgManager {
-    arguments: Vec<String>,
+    pub arguments: Vec<String>,
     options: HashMap<String, Value>,
+    pub options_size: usize,
     has_options: bool,
     pub length: usize
 }
@@ -18,7 +19,7 @@ pub struct ArgManager {
 impl ArgManager {
     pub fn new(arguments: Vec<String>) -> Self {
         let length = arguments.len();
-        ArgManager { arguments, options: HashMap::new(), has_options: false, length }
+        ArgManager { arguments, options: HashMap::new(), options_size: 0, has_options: false, length }
     }
 
     pub fn scan(&mut self) {
@@ -26,6 +27,7 @@ impl ArgManager {
             if argument.starts_with("-") {
                 self.has_options = true;
                 if let Some(value) = self.options.get(&argument[1..]) {
+                    self.options_size += 1;
                     match value {
                         Value::Bool(b) => {
                             self.options.insert(argument[1..].to_string(), Value::Bool(!b));
