@@ -26,8 +26,12 @@ rugrep "pattern" file.txt
 ```
 
 ## Options
+| Option | Description |
+|---------|--------|
+| -n | Shows file and line of pattern |
+| -nf | Disables formating, useful for older windows consoles |
 
-Currently no options, except -n, are implemented. Plain text and directory file search only.
+Currently no other options are implemented
 
 ## License
 

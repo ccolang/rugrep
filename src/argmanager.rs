@@ -22,9 +22,11 @@ impl ArgManager {
     }
 
     pub fn scan(&mut self) {
-        for (i, argument) in self.arguments.iter().enumerate() {
+        for (_i, argument) in self.arguments.iter().enumerate() {
             if argument.starts_with("-") {
+
                 if let Some(value) = self.options.get(&argument[1..]) {
+
                     self.options_size += 1;
                     match value {
                         Value::Bool(b) => {
