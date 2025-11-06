@@ -1,5 +1,7 @@
 use std::env;
+use std::ffi::OsStr;
 use std::fs;
+use std::path;
 use std::path::Path;
 
 use colored::Colorize;
@@ -52,6 +54,27 @@ impl RuGrep {
 
     pub fn show(&self) {
         let path = Path::new(&self.file_path);
+        if path.to_string_lossy().contains("*") {
+            let path_str = path.to_string_lossy();
+            
+            let dir = path_str.split_at(path_str.find("*").unwrap()).0;
+            let path_str = path_str.split_at(path_str.find("*").unwrap() + 2).1;
+            
+            for f in Path::new(dir).read_dir().unwrap() {
+                let file = f.unwrap();
+
+                let file_path = file.path();
+                if file_path.is_dir() {
+                    continue;
+                }
+
+                if file_path.extension().unwrap().eq_ignore_ascii_case(path_str) {
+                    Self::read_file(self, self.pattern.to_string(), file_path.to_string_lossy().to_string());
+                }
+            }
+            return;
+        }
+
         if !path.exists() {
             println!("[-] [err] Couldn't find the file '{}'", self.file_path);
             return;
@@ -80,7 +103,7 @@ impl RuGrep {
 fn main() {
     let mut am = ArgManager::new(env::args().collect());
     am.add_option("n", Value::Bool(false));
-    am.add_option("v", Value::Bool(false));
+    am.add_option("wf", Value::Bool(false));
     am.add_option("nf", Value::Bool(false));
     am.scan();
 
